@@ -1,5 +1,5 @@
 [[package]]
-name = "NFT-ontract"
+name = "NFT-contract"
 source = "member"
 dependencies = [
     "standards",
