@@ -57,7 +57,7 @@ pub(crate) fn defaults(
     )
 }
 
-pub(crate) async fn setup() -> (
+pub(crate) async fn setup(asked_asset: AssetId) -> (
     WalletUnlocked,
     WalletUnlocked,
     ContractId,
