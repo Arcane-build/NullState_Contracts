@@ -63,8 +63,8 @@ pub(crate) async fn setup(asked_asset: AssetId) -> (
     ContractId,
     NFT<WalletUnlocked>,
 ) {
-    let wallets =
-        &launch_custom_provider_and_get_wallets(configure_wallets(asked_asset), None, None)
+    let mut wallets =
+        launch_custom_provider_and_get_wallets(configure_wallets(asked_asset), None, None)
             .await
             .unwrap();
 

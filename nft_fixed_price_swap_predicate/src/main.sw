@@ -41,7 +41,7 @@ fn main() -> bool {
 
     // Ensure both outputs are Coin type
     match (output_type(0), output_type(1)) {
-        (Some(Output::Coin), Some(Output::Coin)) => (),
+        (Output::Coin, Output::Coin) => (),
         _ => return false,
     };
 
@@ -51,11 +51,9 @@ fn main() -> bool {
     match (output1, output2) {
         (Some((to1, asset1, amt1)), Some((to2, asset2, amt2))) => {
             // Check both possible output orderings
-            let valid_case1 = to1 == RECEIVER && asset1 == ASK_ASSET && amt1 == ASK_AMOUNT && to2 == TREASURY_ADDRESS && asset2 == FEE_ASSET && amt2 == FEE_AMOUNT;
+            let valid_case = to1 == RECEIVER && asset1 == ASK_ASSET && amt1 == ASK_AMOUNT && to2 == TREASURY_ADDRESS && asset2 == FEE_ASSET && amt2 == FEE_AMOUNT;
 
-            let valid_case2 = to2 == RECEIVER && asset2 == ASK_ASSET && amt2 == ASK_AMOUNT && to1 == TREASURY_ADDRESS && asset1 == FEE_ASSET && amt1 == FEE_AMOUNT;
-
-            valid_case1 || valid_case2
+            valid_case
         },
         _ => false,
     }
@@ -73,9 +71,7 @@ fn get_output_details(output_index: u64) -> Option<(Address, AssetId, u64)> {
         None => return None,
     };
 
-    let amount = match output_amount(output_index) {
-        Some(amount) => amount,
-        None => return None,
-    };
+    let amount = output_amount(output_index);
+
     Some((to, asset_id, amount))
 }

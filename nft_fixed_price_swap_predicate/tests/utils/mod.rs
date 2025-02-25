@@ -17,7 +17,7 @@ use fuels::{
 
 abigen!(Predicate(
     name = "MyPredicate",
-    abi = "../nft_fixed_price_swap_predicate/out/debug/nft_fixed_price_swap_predicate-abi.json"
+    abi = "./out/debug/nft_fixed_price_swap_predicate-abi.json"
 ));
 
 const ASK_ASSET: AssetId = AssetId::new([1u8; 32]);
@@ -41,9 +41,9 @@ pub async fn test_predicate_spend_with_parameters(
 ) {
     let receiver_address = receiver.parse().unwrap();
 
-    let (wallet1, wallet2, id, instance_1, _instance_2) = setup(asked_asset).await;
+    let (wallet1, wallet2, id, instance_1) = setup(asked_asset).await;
     let (asset_id_1, sub_id_1, owner_identity, other_identity) =
-        defaults(id, wallet1, wallet2.clone());
+        defaults(id, wallet1.clone(), wallet2.clone());
 
     let receiver_wallet = &wallet1;
     let taker_wallet = &wallet2;
@@ -69,8 +69,8 @@ pub async fn test_predicate_spend_with_parameters(
         .transfer(predicate.address(), 1, asset_id_1, TxPolicies::default())
         .await
         .unwrap();
-
-    // The predicate root has received the coin
+    
+    // The predicate root has received the nft
     assert_eq!(
         get_balance(provider, predicate.address(), asset_id_1).await,
         1
@@ -101,7 +101,7 @@ pub async fn test_predicate_spend_with_parameters(
     };
 
     //output to treasury for fee coin
-    let output_to_receiver = Output::Coin {
+    let output_to_treasury = Output::Coin {
         to: Address::from(receiver_address.clone()),
         amount: fee_amount,
         asset_id: fee_asset,
@@ -123,7 +123,7 @@ pub async fn test_predicate_spend_with_parameters(
 
     let mut tb = ScriptTransactionBuilder::prepare_transfer(
         vec![input_predicate, input_from_taker],
-        vec![output_to_receiver, output_to_taker, output_asked_change],
+        vec![output_to_receiver, output_to_treasury, output_to_taker, output_asked_change],
         TxPolicies::default(),
     );
     tb.add_signer(taker_wallet.clone()).unwrap();
@@ -145,7 +145,7 @@ pub async fn test_predicate_spend_with_parameters(
     assert_eq!(predicate_balance, 0);
 
     // Receiver has been paid `ask_amount`
-    assert_eq!(receiver_balance, initial_receiver_balance + ask_amount);
+        assert_eq!(receiver_balance, initial_receiver_balance + ask_amount);
 
     // Taker has sent `ask_amount` of the asked asset and received `offered_amount` of the offered asset in return
     assert_eq!(
@@ -153,14 +153,18 @@ pub async fn test_predicate_spend_with_parameters(
         initial_taker_asked_asset_balance - ask_amount
     );
     assert_eq!(taker_offered_asset_balance, 1);
+    assert_eq!(
+        taker_offered_asset_balance,
+        initial_taker_offered_asset_balance + 1
+    );
 }
 
 // Tests that the predicate can be recovered by the owner
 // `correct_owner` is a boolean flag to set in order to test passing and failing conditions
 pub async fn recover_predicate_as_owner(correct_owner: bool) {
-    let (wallet1, wallet2, id, instance_1, _instance_2) = setup(ASK_ASSET).await;
+    let (wallet1, wallet2, id, instance_1) = setup(ASK_ASSET).await;
     let (asset_id_1, sub_id_1, owner_identity, other_identity) =
-        defaults(id, wallet1, wallet2.clone());
+        defaults(id, wallet1.clone(), wallet2.clone());
 
     let wallet = match correct_owner {
         true => &wallet1,
@@ -174,7 +178,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
     let predicate = Predicate::load_from(PREDICATE_BINARY)
         .unwrap()
         .with_configurables(
-            SwapPredicateConfigurables::default()
+            MyPredicateConfigurables::default()
                 .with_RECEIVER(wallet1.address().into())
                 .unwrap(),
         )
@@ -205,12 +209,6 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         .await
         .unwrap()[0]
         .clone();
-
-    let output_to_receiver = Output::Coin {
-        to: Address::from(wallet.address()),
-        amount: 1,
-        asset_id: asset_id_1,
-    };
 
     // Use a change output to send the unlocked coins back to the wallet
     let output_offered_change = Output::Change {
