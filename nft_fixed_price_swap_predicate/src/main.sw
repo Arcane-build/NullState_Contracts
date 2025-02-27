@@ -4,6 +4,7 @@ use std::{
     inputs::{
         input_coin_owner,
         input_count,
+        input_asset_id,
     },
     outputs::{
         Output,
@@ -17,12 +18,13 @@ use std::{
 
 /// configurable should be set before we deploy predicate
 configurable {
-    FEE_AMOUNT: u64 = 2,
-    FEE_ASSET: AssetId = AssetId::from(0x0101010101010101010101010101010101010101010101010101010101010101),
-    TREASURY_ADDRESS: Address = Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db),
-    ASK_AMOUNT: u64 = 42,
-    ASK_ASSET: AssetId = AssetId::from(0x0101010101010101010101010101010101010101010101010101010101010101),
-    RECEIVER: Address = Address::from(0x09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db),
+    FEE_AMOUNT: u64 = 0,
+    FEE_ASSET: AssetId = AssetId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
+    TREASURY_ADDRESS: Address = Address::from(0x0000000000000000000000000000000000000000000000000000000000000000),
+    ASK_AMOUNT: u64 = 0,
+    ASK_ASSET: AssetId = AssetId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
+    RECEIVER: Address = Address::from(0x0000000000000000000000000000000000000000000000000000000000000000),
+    NFT_ASSET_ID: AssetId = AssetId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
 }
 
 /// extracts output details
@@ -54,6 +56,12 @@ fn main() -> bool {
             _ => return false,
         }
     }
+
+    // validate input
+    if let (Some(nft_asset), Some(ask_asset)) = (input_asset_id(0), input_asset_id(1)) {
+    if ask_asset != ASK_ASSET || nft_asset != NFT_ASSET_ID {
+        return false;
+    }}
 
     // Validate output configuration
     if output_count() < 2 {

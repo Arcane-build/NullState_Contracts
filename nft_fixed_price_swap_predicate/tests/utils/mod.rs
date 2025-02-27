@@ -131,10 +131,9 @@ pub async fn test_predicate_spend_with_parameters(
 
     let output_to_treasury = Output::Coin {
         to: Address::from(receiver_address.clone()),
-        amount: 2,
+        amount: fee_amount,
         asset_id: asked_asset,
     };
-
 
     // Output for the offered coin transferred from the predicate to the order taker
     let output_to_taker = Output::Coin {

@@ -37,7 +37,3 @@ pub(crate) fn get_asset_id(sub_id: Bytes32, contract: ContractId) -> AssetId {
     hasher.update(*sub_id);
     AssetId::new(*Bytes32::from(<[u8; 32]>::from(hasher.finalize())))
 }
-
-pub(crate) async fn get_wallet_balance(wallet: &WalletUnlocked, asset: &AssetId) -> u64 {
-    wallet.get_asset_balance(asset).await.unwrap()
-}
