@@ -33,6 +33,12 @@ mod revert {
 
     #[tokio::test]
     #[should_panic]
+    async fn incorrect_fee_amount() {
+        utils::test_predicate_spend_with_parameters(ASK_AMOUNT, ASK_ASSET, RECEIVER, 4).await;
+    }
+
+    #[tokio::test]
+    #[should_panic]
     async fn incorrect_ask_asset() {
         utils::test_predicate_spend_with_parameters(ASK_AMOUNT, AssetId::new([42u8; 32]), RECEIVER, FEE_AMOUNT)
             .await;
@@ -54,5 +60,11 @@ mod revert {
     #[should_panic]
     async fn incorrect_owner_recover_funds() {
         utils::recover_predicate_as_owner(false).await;
+    }
+
+    #[tokio::test]
+    #[should_panic]
+    async fn incorrect_output_without_payment() {
+        utils::test_predicate_spend_with_wrong_output().await;
     }
 }

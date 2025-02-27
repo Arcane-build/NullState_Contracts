@@ -1,5 +1,4 @@
 use fuels::{
-    accounts::ViewOnlyAccount,
     prelude::{
         abigen, Contract, ContractId,
         LoadConfiguration, TxPolicies, WalletUnlocked,
