@@ -1,6 +1,6 @@
 [[package]]
 name = "core"
-source = "path+from-root-15C6C198C250216E"
+source = "path+from-root-DD4F12EBC39CAB5B"
 
 [[package]]
 name = "nft_fixed_price_swap_predicate"
@@ -9,5 +9,5 @@ dependencies = ["std"]
 
 [[package]]
 name = "std"
-source = "git+https://github.com/fuellabs/sway?rev#1c3183a42ffe9e3eef57ec3b02537c0f3e2b109f"
+source = "git+https://github.com/fuellabs/sway?tag=v0.66.7#5ed7cec6dbcd42f0c2f84df8511a4c0007b1902e"
 dependencies = ["core"]

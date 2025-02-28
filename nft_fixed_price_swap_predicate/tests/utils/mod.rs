@@ -143,12 +143,19 @@ pub async fn test_predicate_spend_with_parameters(
         .unwrap()[0]
         .clone();
 
+        let fee_input = taker_wallet
+        .get_asset_inputs_for_amount(BASE_ASSET, 1, None)
+        .await
+        .unwrap()[0]
+        .clone();
+
     // Output for the asked coin transferred from the taker to the receiver
     let output_to_receiver = Output::Coin {
         to: Address::from(receiver_address.clone()),
         amount: ask_amount,
         asset_id: asked_asset,
     };
+
 
     let output_to_treasury = Output::Coin {
         to: Address::from(treasury_address.clone()),
@@ -171,7 +178,7 @@ pub async fn test_predicate_spend_with_parameters(
     };
 
     let mut tb = ScriptTransactionBuilder::prepare_transfer(
-        vec![input_predicate, input_from_taker],
+        vec![input_predicate, input_from_taker, fee_input],
         vec![
             output_to_receiver,
             output_to_treasury,
