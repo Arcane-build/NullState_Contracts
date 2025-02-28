@@ -1,7 +1,7 @@
 mod interface;
 mod setupnft;
 use fuels::{
-    accounts::{predicate::Predicate, Account},
+    accounts::{predicate::Predicate, Account, ViewOnlyAccount},
     prelude::{
         abigen, launch_custom_provider_and_get_wallets, Address, AssetConfig, AssetId,
         Bech32Address, Provider, TxPolicies,
@@ -131,14 +131,14 @@ pub async fn test_predicate_spend_with_parameters(
 
     // Get predicate input
     let input_predicate = predicate
-        .get_asset_inputs_for_amount(offered_asset, 1)
+        .get_asset_inputs_for_amount(offered_asset, 1, None)
         .await
         .unwrap()[0]
         .clone();
 
     // Get input from taker
     let input_from_taker = taker_wallet
-        .get_asset_inputs_for_amount(asked_asset, 1)
+        .get_asset_inputs_for_amount(asked_asset, 44, None)
         .await
         .unwrap()[0]
         .clone();
@@ -179,7 +179,7 @@ pub async fn test_predicate_spend_with_parameters(
             output_asked_change,
         ],
         TxPolicies::default(),
-    );
+    ).enable_burn(true);
     tb.add_signer(taker_wallet.clone()).unwrap();
     let tx = tb.build(provider).await.unwrap();
 
@@ -261,14 +261,14 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
 
     // Get predicate input
     let input_predicate = predicate
-        .get_asset_inputs_for_amount(offered_asset, 1)
+        .get_asset_inputs_for_amount(offered_asset, 1, None)
         .await
         .unwrap()[0]
         .clone();
 
     // Get input from wallet
     let input_from_taker = wallet
-        .get_asset_inputs_for_amount(BASE_ASSET, 1)
+        .get_asset_inputs_for_amount(BASE_ASSET, 1, None)
         .await
         .unwrap()[0]
         .clone();
@@ -284,7 +284,7 @@ pub async fn recover_predicate_as_owner(correct_owner: bool) {
         vec![input_predicate, input_from_taker],
         vec![output_offered_change],
         TxPolicies::default(),
-    );
+    ).enable_burn(true);
     tb.add_signer(wallet.clone()).unwrap();
 
     let tx = tb.build(provider).await.unwrap();
@@ -344,14 +344,14 @@ pub async fn test_predicate_spend_with_wrong_output() {
 
     // Get predicate input
     let input_predicate = predicate
-        .get_asset_inputs_for_amount(offered_asset, 1)
+        .get_asset_inputs_for_amount(offered_asset, 1, None)
         .await
         .unwrap()[0]
         .clone();
 
     // Get input from wallet
     let input_from_taker = wallets[1]
-        .get_asset_inputs_for_amount(BASE_ASSET, 1)
+        .get_asset_inputs_for_amount(BASE_ASSET, 1, None)
         .await
         .unwrap()[0]
         .clone();

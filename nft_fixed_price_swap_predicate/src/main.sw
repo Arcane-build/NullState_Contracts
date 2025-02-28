@@ -39,14 +39,17 @@ fn get_output_details(output_index: u64) -> Option<(Address, AssetId, u64)> {
         None => return None,
     };
 
-    let amount = output_amount(output_index);
+    let amount = match output_amount(output_index) {
+        Some(amount) => amount,
+        None => return None,
+    };
 
     Some((to, asset_id, amount))
 }
 
 fn main() -> bool {
     // Allow cancellation by receiver if they provide input coins
-    if input_count() == 2u8 {
+    if input_count() == 2 {
         match (input_coin_owner(0), input_coin_owner(1)) {
             (Some(owner1), Some(owner2)) => {
                 if owner1 == RECEIVER || owner2 == RECEIVER {
@@ -70,7 +73,7 @@ fn main() -> bool {
 
     // Ensure both outputs are Coin type
     match (output_type(0), output_type(1)) {
-        (Output::Coin, Output::Coin) => (),
+        (Some(Output::Coin), Some(Output::Coin)) => (),
         _ => return false,
     };
 
@@ -86,5 +89,6 @@ fn main() -> bool {
         },
         _ => false,
     }
+
 }
 

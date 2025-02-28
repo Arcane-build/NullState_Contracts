@@ -1,8 +1,6 @@
 use crate::utils::setupnft::{Metadata, State, NFT};
 use fuels::{
-    prelude::{AssetId, CallParameters, TxPolicies, WalletUnlocked},
-    programs::{call_response::FuelCallResponse, call_utils::TxDependencyExtension},
-    types::{Bits256, Identity},
+    prelude::{AssetId, CallParameters, TxPolicies, WalletUnlocked}, programs::responses::CallResponse, types::{transaction_builders::VariableOutputPolicy, Bits256, Identity}
 };
 
 pub(crate) async fn total_assets(contract: &NFT<WalletUnlocked>) -> u64 {
@@ -48,11 +46,11 @@ pub(crate) async fn mint(
     recipient: Identity,
     sub_id: Bits256,
     amount: u64,
-) -> FuelCallResponse<()> {
+) -> CallResponse<()> {
     contract
         .methods()
         .mint(recipient, sub_id, amount)
-        .append_variable_outputs(1)
+        .with_variable_output_policy(VariableOutputPolicy::EstimateMinimum)
         .call()
         .await
         .unwrap()
@@ -63,7 +61,7 @@ pub(crate) async fn burn(
     asset_id: AssetId,
     sub_id: Bits256,
     amount: u64,
-) -> FuelCallResponse<()> {
+) -> CallResponse<()> {
     let call_params = CallParameters::new(amount, asset_id, 1_000_000);
 
     contract
@@ -85,7 +83,7 @@ pub(crate) async fn set_name(
     contract: &NFT<WalletUnlocked>,
     asset: AssetId,
     name: String,
-) -> FuelCallResponse<()> {
+) -> CallResponse<()> {
     contract
         .methods()
         .set_name(asset, name)
@@ -98,7 +96,7 @@ pub(crate) async fn set_symbol(
     contract: &NFT<WalletUnlocked>,
     asset: AssetId,
     name: String,
-) -> FuelCallResponse<()> {
+) -> CallResponse<()> {
     contract
         .methods()
         .set_symbol(asset, name)
@@ -111,7 +109,7 @@ pub(crate) async fn set_decimals(
     contract: &NFT<WalletUnlocked>,
     asset: AssetId,
     decimals: u8,
-) -> FuelCallResponse<()> {
+) -> CallResponse<()> {
     contract
         .methods()
         .set_decimals(asset, decimals)
@@ -123,7 +121,7 @@ pub(crate) async fn set_decimals(
 pub(crate) async fn constructor(
     contract: &NFT<WalletUnlocked>,
     owner: Identity,
-) -> FuelCallResponse<()> {
+) -> CallResponse<()> {
     contract.methods().constructor(owner).call().await.unwrap()
 }
 
@@ -146,7 +144,7 @@ pub(crate) async fn set_metadata(
     asset: AssetId,
     key: String,
     metadata: Metadata,
-) -> FuelCallResponse<()> {
+) -> CallResponse<()> {
     contract
         .methods()
         .set_metadata(asset, key, metadata)
@@ -155,11 +153,11 @@ pub(crate) async fn set_metadata(
         .unwrap()
 }
 
-pub(crate) async fn pause(contract: &NFT<WalletUnlocked>) -> FuelCallResponse<()> {
+pub(crate) async fn pause(contract: &NFT<WalletUnlocked>) -> CallResponse<()> {
     contract.methods().pause().call().await.unwrap()
 }
 
-pub(crate) async fn unpause(contract: &NFT<WalletUnlocked>) -> FuelCallResponse<()> {
+pub(crate) async fn unpause(contract: &NFT<WalletUnlocked>) -> CallResponse<()> {
     contract.methods().unpause().call().await.unwrap()
 }
 
