@@ -1,0 +1,9 @@
+[package]
+name = "deploy-scripts"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.21.0", features = ["rt", "macros"] }
+fuels = { version = "0.62.0", features = ["fuel-core-lib"] }
+sha2 = { version = "0.10.7" }
