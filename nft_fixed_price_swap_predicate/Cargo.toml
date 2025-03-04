@@ -1,0 +1,17 @@
+[package]
+name = "nft_fixed_price_swap_predicate"
+version = "0.1.0"
+edition = "2021"
+authors = ["user"]
+license = "Apache-2.0"
+
+[dependencies]
+tokio = { version = "1.12", features = ["rt", "macros"] }
+sha2 = { version = "0.10.7" }
+fuels = "0.70.1"
+
+
+[[test]]
+harness = true
+name = "integration_tests"
+path = "tests/harness.rs"
